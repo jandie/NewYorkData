@@ -1,0 +1,8 @@
+---
+applications:
+- name: nyc-yellow
+  memory: 1G
+  instances: 1
+  buildpack: python_buildpack
+  health-check-type: process
+  command: gunicorn wsgi:application
