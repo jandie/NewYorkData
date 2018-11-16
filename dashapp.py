@@ -52,6 +52,10 @@ dashapp.layout = html.Div([
         labelClassName="mapControls",
         inputStyle={"z-index": "3"}
     ),
+
+    html.Br(),
+
+    html.Button('Next', id='next-button'),
 ])
 
 
@@ -69,9 +73,7 @@ def update_output_div(input_value, prevLayout, mapControls):
 
     filtered_df = df[(df.pickup_datetime.dt.hour == input_value)]
 
-    if (prevLayout is not None and mapControls is not None and
-            'lock' in mapControls):
-        print(prevLayout)
+    if not prevLayout is None and 'mapbox.zoom' in prevLayout.keys():
         zoom = float(prevLayout['mapbox.zoom'])
         latInitial = float(prevLayout['mapbox.center']['lat'])
         lonInitial = float(prevLayout['mapbox.center']['lon'])
@@ -128,5 +130,20 @@ def update_output_div(input_value, prevLayout, mapControls):
     )
 
 
+@dashapp.callback(
+    dash.dependencies.Output('time-slider', 'value'),
+    [dash.dependencies.Input('next-button', 'n_clicks')],
+    [dash.dependencies.State('time-slider', 'value')])
+def update_output(n_clicks, value):
+    new_value = value + 1
+
+    if new_value > 23:
+        new_value = 0
+    elif new_value < 0:
+        new_value = 23
+
+    return new_value
+
+
 if __name__ == '__main__':
-    dashapp.run_server(os.getenv("PORT"), debug=True)
+    dashapp.run_server(80)
