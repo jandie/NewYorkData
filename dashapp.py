@@ -20,6 +20,9 @@ default_zoom = 12
 
 df = pd.read_csv('small_taxi.csv')
 df['pickup_datetime'] = pd.to_datetime(df['pickup_datetime'])
+df = df[(df.fare_amount < 70) & (df.fare_amount > 0)]
+max_fare = df['fare_amount'].max()
+min_fare = df['fare_amount'].min()
 
 dashapp.layout = html.Div([
     html.Div(id='prev-button-value', style={'display': 'none'}),
@@ -60,6 +63,7 @@ dashapp.layout = html.Div([
     [State('my-graph', 'relayoutData')]
 )
 def update_output_div(input_value, prevLayout):
+    print(max_fare, min_fare)
     zoom = default_zoom
     latInitial = 40.7272
     lonInitial = -73.991251
@@ -79,7 +83,13 @@ def update_output_div(input_value, prevLayout):
                 lat=filtered_df['pickup_latitude'],
                 lon=filtered_df['pickup_longitude'],
                 mode='markers',
+                text=filtered_df['fare_amount'],
                 hoverinfo="lat+lon+text",
+                marker=dict(
+                    color=filtered_df['fare_amount'],
+                    cmin=min_fare,
+                    cmax=max_fare
+                )
             )
         ]),
         layout=Layout(
@@ -95,31 +105,7 @@ def update_output_div(input_value, prevLayout):
                 ),
                 zoom=zoom,
                 bearing=bearing
-            ),
-            updatemenus=[
-                dict(
-                    buttons=([
-                        dict(
-                            args=[{
-                                'mapbox.zoom': default_zoom,
-                                'mapbox.center.lon': '-73.991251',
-                                'mapbox.center.lat': '40.7272',
-                                'mapbox.bearing': 0
-                            }],
-                            label='Reset Zoom',
-                            method='relayout'
-                        )
-                    ]),
-                    direction='left',
-                    pad={'r': 0, 't': 0, 'b': 0, 'l': 0},
-                    showactive=False,
-                    type='buttons',
-                    x=0.45,
-                    xanchor='left',
-                    yanchor='bottom',
-                    borderwidth=1,
-                    y=0.02
-                )]
+            )
         )
     )
 
