@@ -63,7 +63,6 @@ dashapp.layout = html.Div([
     [State('my-graph', 'relayoutData')]
 )
 def update_output_div(input_value, prevLayout):
-    print(max_fare, min_fare)
     zoom = default_zoom
     latInitial = 40.7272
     lonInitial = -73.991251
