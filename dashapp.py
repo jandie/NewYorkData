@@ -10,63 +10,57 @@ from flask import Flask
 
 app = Flask(__name__)
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
-
 dashapp = dash.Dash(__name__, server=app)
-
+dashapp.css.append_css({
+    "external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
+})
 mapbox_access_token = 'pk.eyJ1IjoiYWxpc2hvYmVpcmkiLCJhIjoiY2ozYnM3YTUxMDAxeDMzcGNjbmZyMmplZiJ9.ZjmQ0C2MNs1AzEBC_Syadg'
-HOUR = 1
+default_hour = 0
+default_zoom = 12
 
 df = pd.read_csv('small_taxi.csv')
 df['pickup_datetime'] = pd.to_datetime(df['pickup_datetime'])
 
 dashapp.layout = html.Div([
-    html.H1(children='New York City - Yellow Cab data 2014'),
+    html.Div(id='prev-button-value', style={'display': 'none'}),
+    html.Div(id='next-button-value', style={'display': 'none'}),
 
-    html.Div(children='''
-        Dash: A web application framework for Python.
-    '''),
+    html.H1(children='New York City - Yellow Cab data 2014',
+            style={"text-align": "center"}),
+
+    html.Div(children="By Jandie Hendriks",
+             style={"text-align": "center",
+                    "margin-bottom": "20px"}),
 
     html.Div([
         dcc.Graph(id='my-graph')
-    ]),
+    ], style={"margin-bottom": "20px"}),
 
-    html.Br(),
+    html.Div(
+        dcc.Slider(
+            id='time-slider',
+            min=0,
+            max=23,
+            marks={i: 'Time {}'.format(i) if i == 1 else str(i) for i in range(0, 23)},
+            value=default_hour,
+        ), style={"margin-bottom": "30px"}),
 
-    dcc.Slider(
-        id='time-slider',
-        min=0,
-        max=23,
-        marks={i: 'Time {}'.format(i) if i == 1 else str(i) for i in range(0, 23)},
-        value=0,
-    ),
-
-    html.Br(),
-
-    dcc.Checklist(
-        id="mapControls",
-        options=[
-            {'label': 'Lock Camera', 'value': 'lock'}
-        ],
-        values=['lock'],
-        labelClassName="mapControls",
-        inputStyle={"z-index": "3"}
-    ),
-
-    html.Br(),
-
-    html.Button('Next', id='next-button'),
+    html.Button('Next',
+                id='next-button',
+                style={"margin-bottom": "20px"}),
+    # html.Button('Previous',
+    #             id='prev-button',
+    #             style={"margin-bottom": "20px"}),
 ])
 
 
 @dashapp.callback(
     Output('my-graph', 'figure'),
     [Input('time-slider', 'value')],
-    [State('my-graph', 'relayoutData'),
-     State('mapControls', 'values')]
+    [State('my-graph', 'relayoutData')]
 )
-def update_output_div(input_value, prevLayout, mapControls):
-    zoom = 10.0
+def update_output_div(input_value, prevLayout):
+    zoom = default_zoom
     latInitial = 40.7272
     lonInitial = -73.991251
     bearing = 0
@@ -107,7 +101,7 @@ def update_output_div(input_value, prevLayout, mapControls):
                     buttons=([
                         dict(
                             args=[{
-                                'mapbox.zoom': 12,
+                                'mapbox.zoom': default_zoom,
                                 'mapbox.center.lon': '-73.991251',
                                 'mapbox.center.lat': '40.7272',
                                 'mapbox.bearing': 0
@@ -134,7 +128,7 @@ def update_output_div(input_value, prevLayout, mapControls):
     dash.dependencies.Output('time-slider', 'value'),
     [dash.dependencies.Input('next-button', 'n_clicks')],
     [dash.dependencies.State('time-slider', 'value')])
-def update_output(n_clicks, value):
+def update_output(next, value):
     new_value = value + 1
 
     if new_value > 23:
@@ -146,4 +140,4 @@ def update_output(n_clicks, value):
 
 
 if __name__ == '__main__':
-    dashapp.run_server(80)
+    dashapp.run_server(8080)
