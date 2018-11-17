@@ -18,7 +18,7 @@ mapbox_access_token = 'pk.eyJ1IjoiYWxpc2hvYmVpcmkiLCJhIjoiY2ozYnM3YTUxMDAxeDMzcG
 default_hour = 0
 default_zoom = 12
 
-df = pd.read_csv('small_taxi.csv')
+df = pd.read_csv('https://github.com/jandie/NewYorkData/raw/master/small_taxi.csv')
 df['pickup_datetime'] = pd.to_datetime(df['pickup_datetime'])
 df = df[(df.fare_amount < 70) & (df.fare_amount > 0)]
 max_fare = df['fare_amount'].max()
