@@ -126,6 +126,9 @@ def update_output_div(input_value, color_value, prevLayout):
                 text=filtered_df[color_value],
                 hoverinfo="lat+lon+text",
                 marker=dict(
+                    colorscale='YlOrRd',
+                    reversescale=True,
+                    autocolorscale=False,
                     color=filtered_df[color_value],
                     cmin=filtered_df[color_value].min(),
                     cmax=filtered_df[color_value].max(),
@@ -133,7 +136,7 @@ def update_output_div(input_value, color_value, prevLayout):
                         x=0.935,
                         xpad=0,
                         tick0=0
-                    )
+                    ),
                 )
             )
         ]),
