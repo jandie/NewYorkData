@@ -5,7 +5,6 @@ from dash.dependencies import Input, Output, State
 import pandas as pd
 from plotly import graph_objs as go
 from plotly.graph_objs import *
-import os
 from flask import Flask
 
 
@@ -13,17 +12,22 @@ def get_seconds(time_delta):
     return time_delta.total_seconds()
 
 
+# external CSS stylesheets
+external_stylesheets = [
+    'https://codepen.io/chriddyp/pen/bWLwgP.css'
+]
+
 app = Flask(__name__)
 
-dashapp = dash.Dash(__name__, server=app)
-dashapp.css.append_css({
-    "external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
-})
+dashapp = dash.Dash(__name__,
+                    server=app,
+                    external_stylesheets=external_stylesheets)
+
 mapbox_access_token = 'pk.eyJ1IjoiYWxpc2hvYmVpcmkiLCJhIjoiY2ozYnM3YTUxMDAxeDMzcGNjbmZyMmplZiJ9.ZjmQ0C2MNs1AzEBC_Syadg'
 default_hour = 0
 default_zoom = 12
 
-df = pd.read_csv('https://github.com/jandie/NewYorkData/raw/master/small_taxi.csv')
+df = pd.read_csv('small_taxi.csv')
 
 df = df.loc[df['total_amount'] < 80]
 df = df.loc[(df['pickup_latitude'] > 40) &
@@ -32,9 +36,9 @@ df = df.loc[(df['pickup_latitude'] > 40) &
             (df['pickup_longitude'] < -71)]
 
 df = df.loc[(df['dropoff_latitude'] > 40) &
-              (df['dropoff_latitude'] < 42) &
-              (df['dropoff_longitude'] > -80) &
-              (df['dropoff_longitude'] < -71)]
+            (df['dropoff_latitude'] < 42) &
+            (df['dropoff_longitude'] > -80) &
+            (df['dropoff_longitude'] < -71)]
 
 df = df.loc[(df['rate_code'] >= 1) & (df['rate_code'] <= 6)]
 
@@ -74,6 +78,7 @@ dashapp.layout = html.Div([
                 {'label': 'Average speed', 'value': 'avg_speed'},
                 {'label': 'Duration', 'value': 'duration'},
                 {'label': 'Month', 'value': 'month'},
+                {'label': 'Passenger count', 'value': 'passenger_count'},
             ],
             value='total_amount'
         ), style={"margin-bottom": "30px"}),
@@ -142,7 +147,7 @@ def update_output_div(input_value, color_value, prevLayout):
         ]),
         layout=Layout(
             autosize=True,
-            height=500,
+            height=600,
             margin=layout.Margin(l=0, r=0, t=0, b=0),
             showlegend=False,
             mapbox=dict(
