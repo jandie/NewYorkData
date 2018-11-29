@@ -48,12 +48,9 @@ dashapp.layout = html.Div([
             value=default_hour,
         ), style={"margin-bottom": "30px"}),
 
-    html.Button('Next',
+    html.Button('Next hour',
                 id='next-button',
                 style={"margin-bottom": "20px"}),
-    # html.Button('Previous',
-    #             id='prev-button',
-    #             style={"margin-bottom": "20px"}),
 ])
 
 
@@ -87,7 +84,13 @@ def update_output_div(input_value, prevLayout):
                 marker=dict(
                     color=filtered_df['fare_amount'],
                     cmin=min_fare,
-                    cmax=max_fare
+                    cmax=max_fare,
+                    colorbar=dict(
+                        x=0.935,
+                        xpad=0,
+                        tick0=0,
+                        dtick=3
+                    )
                 )
             )
         ]),
