@@ -8,6 +8,11 @@ from plotly.graph_objs import *
 import os
 from flask import Flask
 
+
+def get_seconds(time_delta):
+    return time_delta.total_seconds()
+
+
 app = Flask(__name__)
 
 dashapp = dash.Dash(__name__, server=app)
@@ -19,10 +24,34 @@ default_hour = 0
 default_zoom = 12
 
 df = pd.read_csv('https://github.com/jandie/NewYorkData/raw/master/small_taxi.csv')
-df['pickup_datetime'] = pd.to_datetime(df['pickup_datetime'])
-df = df[(df.fare_amount < 70) & (df.fare_amount > 0)]
-max_fare = df['fare_amount'].max()
-min_fare = df['fare_amount'].min()
+
+df = df.loc[df['total_amount'] < 80]
+df = df.loc[(df['pickup_latitude'] > 40) &
+            (df['pickup_latitude'] < 42) &
+            (df['pickup_longitude'] > -80) &
+            (df['pickup_longitude'] < -71)]
+
+df = df.loc[(df['dropoff_latitude'] > 40) &
+              (df['dropoff_latitude'] < 42) &
+              (df['dropoff_longitude'] > -80) &
+              (df['dropoff_longitude'] < -71)]
+
+df = df.loc[(df['rate_code'] >= 1) & (df['rate_code'] <= 6)]
+
+df['dropoff_datetime'] = pd.to_datetime(df['dropoff_datetime'], errors='coerce')
+df['pickup_datetime'] = pd.to_datetime(df['pickup_datetime'], errors='coerce')
+
+df['duration'] = df['dropoff_datetime'] - df['pickup_datetime']
+df['duration'] = df['duration'].apply(get_seconds)
+
+df = df.loc[(df['duration'] > 0) & (df['duration'] <= 10000)]
+df = df.loc[(df['trip_distance'] > 0) & (df['trip_distance'] <= 60)]
+
+df['avg_speed'] = df['trip_distance'] / (df['duration'] / 3600)
+
+df = df.loc[(df['avg_speed'] > 0) & (df['avg_speed'] <= 60)]
+
+df['month'] = df['pickup_datetime'].dt.month
 
 dashapp.layout = html.Div([
     html.Div(id='prev-button-value', style={'display': 'none'}),
@@ -34,6 +63,20 @@ dashapp.layout = html.Div([
     html.Div(children="By Jandie Hendriks",
              style={"text-align": "center",
                     "margin-bottom": "20px"}),
+    html.Div(
+        dcc.Dropdown(
+            id='color-dropdown',
+            options=[
+                {'label': 'Total amount', 'value': 'total_amount'},
+                {'label': 'Fare amount', 'value': 'fare_amount'},
+                {'label': 'Trip distance', 'value': 'trip_distance'},
+                {'label': 'Tip amount', 'value': 'tip_amount'},
+                {'label': 'Average speed', 'value': 'avg_speed'},
+                {'label': 'Duration', 'value': 'duration'},
+                {'label': 'Month', 'value': 'month'},
+            ],
+            value='total_amount'
+        ), style={"margin-bottom": "30px"}),
 
     html.Div([
         dcc.Graph(id='my-graph')
@@ -56,10 +99,11 @@ dashapp.layout = html.Div([
 
 @dashapp.callback(
     Output('my-graph', 'figure'),
-    [Input('time-slider', 'value')],
+    [Input('time-slider', 'value'),
+     Input('color-dropdown', 'value')],
     [State('my-graph', 'relayoutData')]
 )
-def update_output_div(input_value, prevLayout):
+def update_output_div(input_value, color_value, prevLayout):
     zoom = default_zoom
     latInitial = 40.7272
     lonInitial = -73.991251
@@ -79,17 +123,16 @@ def update_output_div(input_value, prevLayout):
                 lat=filtered_df['pickup_latitude'],
                 lon=filtered_df['pickup_longitude'],
                 mode='markers',
-                text=filtered_df['fare_amount'],
+                text=filtered_df[color_value],
                 hoverinfo="lat+lon+text",
                 marker=dict(
-                    color=filtered_df['fare_amount'],
-                    cmin=min_fare,
-                    cmax=max_fare,
+                    color=filtered_df[color_value],
+                    cmin=filtered_df[color_value].min(),
+                    cmax=filtered_df[color_value].max(),
                     colorbar=dict(
                         x=0.935,
                         xpad=0,
-                        tick0=0,
-                        dtick=3
+                        tick0=0
                     )
                 )
             )
@@ -114,8 +157,8 @@ def update_output_div(input_value, prevLayout):
 
 @dashapp.callback(
     dash.dependencies.Output('time-slider', 'value'),
-    [dash.dependencies.Input('next-button', 'n_clicks')],
-    [dash.dependencies.State('time-slider', 'value')])
+    [Input('next-button', 'n_clicks')],
+    [State('time-slider', 'value')])
 def update_output(next, value):
     new_value = value + 1
 
