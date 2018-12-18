@@ -61,24 +61,24 @@ dashapp.layout = html.Div([
     html.Div(id='prev-button-value', style={'display': 'none'}),
     html.Div(id='next-button-value', style={'display': 'none'}),
 
-    html.H1(children='New York City - Yellow Cab data 2014',
+    html.H1(children='What is the best taxi place in New York City?',
             style={"text-align": "center"}),
 
-    html.Div(children="By Jandie Hendriks",
+    html.Div(html.P("By Jandie Hendriks"),
              style={"text-align": "center",
                     "margin-bottom": "20px"}),
     html.Div(
         dcc.Dropdown(
             id='color-dropdown',
             options=[
-                {'label': 'Total amount', 'value': 'total_amount'},
-                {'label': 'Fare amount', 'value': 'fare_amount'},
-                {'label': 'Trip distance', 'value': 'trip_distance'},
-                {'label': 'Tip amount', 'value': 'tip_amount'},
-                {'label': 'Average speed', 'value': 'avg_speed'},
-                {'label': 'Duration', 'value': 'duration'},
-                {'label': 'Month', 'value': 'month'},
-                {'label': 'Passenger count', 'value': 'passenger_count'},
+                {'label': 'Total amount - The total amount a customer paid', 'value': 'total_amount'},
+                {'label': 'Fare amount - The amount a customer paid only for the traveled distance', 'value': 'fare_amount'},
+                {'label': 'Trip distance - How far the taxi drove during the trip', 'value': 'trip_distance'},
+                {'label': 'Tip amount - Howmuch a customer paid tipped', 'value': 'tip_amount'},
+                {'label': 'Average speed - The average speed of the taxi trip', 'value': 'avg_speed'},
+                {'label': 'Duration - The duration of the taxi trip', 'value': 'duration'},
+                {'label': 'Month - The month in which the taxi trip was ', 'value': 'month'},
+                {'label': 'Passenger count - The amount of passengers the taxi cab had during a taxi trip', 'value': 'passenger_count'},
             ],
             value='total_amount'
         ), style={"margin-bottom": "30px"}),
@@ -99,7 +99,7 @@ dashapp.layout = html.Div([
     html.Button('Next hour',
                 id='next-button',
                 style={"margin-bottom": "20px"}),
-])
+], style={"font-family": "Lucida Console"})
 
 
 @dashapp.callback(

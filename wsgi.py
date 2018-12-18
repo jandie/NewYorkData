@@ -1,5 +1,4 @@
-from dashapp import app as application
+from dashapp import dashapp
 
-# python gunicorn finance.wsgi:application
 if __name__ == "__main__":
-    application.run()
+    dashapp.server.run()
