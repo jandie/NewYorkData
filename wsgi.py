@@ -1,4 +1,6 @@
 from dashapp import dashapp
 
+application = dashapp.server
+
 if __name__ == "__main__":
-    dashapp.server.run()
+    application.run()

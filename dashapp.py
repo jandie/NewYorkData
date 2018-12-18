@@ -21,7 +21,8 @@ app = Flask(__name__)
 
 dashapp = dash.Dash(__name__,
                     server=app,
-                    external_stylesheets=external_stylesheets)
+                    external_stylesheets=external_stylesheets,
+                    title="NYC taxi")
 
 mapbox_access_token = 'pk.eyJ1IjoiYWxpc2hvYmVpcmkiLCJhIjoiY2ozYnM3YTUxMDAxeDMzcGNjbmZyMmplZiJ9.ZjmQ0C2MNs1AzEBC_Syadg'
 default_hour = 0
