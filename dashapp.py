@@ -67,38 +67,46 @@ dashapp.layout = html.Div([
     html.Div(html.P("By Jandie Hendriks"),
              style={"text-align": "center",
                     "margin-bottom": "20px"}),
-    html.Div(
-        dcc.Dropdown(
-            id='color-dropdown',
-            options=[
-                {'label': 'Total amount - The total amount a customer paid', 'value': 'total_amount'},
-                {'label': 'Fare amount - The amount a customer paid only for the traveled distance', 'value': 'fare_amount'},
-                {'label': 'Trip distance - How far the taxi drove during the trip', 'value': 'trip_distance'},
-                {'label': 'Tip amount - Howmuch a customer paid tipped', 'value': 'tip_amount'},
-                {'label': 'Average speed - The average speed of the taxi trip', 'value': 'avg_speed'},
-                {'label': 'Duration - The duration of the taxi trip', 'value': 'duration'},
-                {'label': 'Month - The month in which the taxi trip was ', 'value': 'month'},
-                {'label': 'Passenger count - The amount of passengers the taxi cab had during a taxi trip', 'value': 'passenger_count'},
-            ],
-            value='total_amount'
-        ), style={"margin-bottom": "30px"}),
 
     html.Div([
-        dcc.Graph(id='my-graph')
-    ], style={"margin-bottom": "20px"}),
+        html.Div(
+            dcc.Dropdown(
+                id='color-dropdown',
+                options=[
+                    {'label': 'Total amount - The total amount a customer paid', 'value': 'total_amount'},
+                    {'label': 'Fare amount - The amount a customer paid only for the traveled distance',
+                     'value': 'fare_amount'},
+                    {'label': 'Trip distance - How far the taxi drove during the trip', 'value': 'trip_distance'},
+                    {'label': 'Tip amount - Howmuch a customer paid tipped', 'value': 'tip_amount'},
+                    {'label': 'Average speed - The average speed of the taxi trip', 'value': 'avg_speed'},
+                    {'label': 'Duration - The duration of the taxi trip', 'value': 'duration'},
+                    {'label': 'Month - The month in which the taxi trip was ', 'value': 'month'},
+                    {'label': 'Passenger count - The amount of passengers the taxi cab had during a taxi trip',
+                     'value': 'passenger_count'},
+                ],
+                value='total_amount'
+            ), style={"margin-bottom": "30px"}),
 
-    html.Div(
-        dcc.Slider(
-            id='time-slider',
-            min=0,
-            max=23,
-            marks={i: 'Time {}'.format(i) if i == 1 else str(i) for i in range(0, 23)},
-            value=default_hour,
-        ), style={"margin-bottom": "30px"}),
+        html.Div([
+            dcc.Graph(id='my-graph')
+        ], style={"margin-bottom": "20px",
+                  "margin-left": "20px",
+                  "margin-right": "20px"}),
 
-    html.Button('Next hour',
-                id='next-button',
-                style={"margin-bottom": "20px"}),
+        html.Div(
+            dcc.Slider(
+                id='time-slider',
+                min=0,
+                max=23,
+                marks={i: 'Time {}'.format(i) if i == 1 else str(i) for i in range(0, 23)},
+                value=default_hour,
+            ), style={"margin-bottom": "30px"}),
+
+        html.Button('Next hour',
+                    id='next-button',
+                    style={"margin-bottom": "20px"}),
+    ], style={"margin-left": "50px",
+              "margin-right": "50px"})
 ], style={"font-family": "Lucida Console"})
 
 
@@ -147,7 +155,7 @@ def update_output_div(input_value, color_value, prevLayout):
         ]),
         layout=Layout(
             autosize=True,
-            height=600,
+            height=500,
             margin=layout.Margin(l=0, r=0, t=0, b=0),
             showlegend=False,
             mapbox=dict(
