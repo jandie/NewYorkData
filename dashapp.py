@@ -62,7 +62,7 @@ dashapp.layout = html.Div([
     html.Div(id='prev-button-value', style={'display': 'none'}),
     html.Div(id='next-button-value', style={'display': 'none'}),
 
-    html.H1(children='What is the best taxi place in New York City?',
+    html.H1(children='What is the best taxi placement in New York City?',
             style={"text-align": "center"}),
 
     html.Div(html.P("By Jandie Hendriks"),
